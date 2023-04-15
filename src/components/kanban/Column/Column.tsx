@@ -18,8 +18,12 @@ const Column: React.FC<ColumnProps> = ({
 }) => {
   const handleMenuClick = () => {}
   return (
-    <div ref={innerRef} {...rest} className="column-wrapper min-h-400 w-96">
-      <Card className="min-h-380 column">
+    <div
+      ref={innerRef}
+      {...rest}
+      className="column-wrapper min-h-400 w-96 mx-2"
+    >
+      <Card className="min-h-200 column" style={{ backgroundColor: '#f7f8f9' }}>
         <div className="flex items-center justify-between p-3">
           <Typography variant="h5" className="font-normal">
             {title}
@@ -28,7 +32,6 @@ const Column: React.FC<ColumnProps> = ({
             <RxDotsHorizontal />
           </IconButton>
         </div>
-
         {children}
       </Card>
     </div>
