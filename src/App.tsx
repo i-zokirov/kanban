@@ -1,33 +1,66 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { DragDropContext, Draggable, DropResult } from 'react-beautiful-dnd'
+import { Column, Droppable } from './components/kanban'
+import { TaskCard } from './components/ui'
 
+interface Item {
+  id: string
+  content: string
+}
+
+const columns = ['Backlog', 'In Progress', 'Done']
 function App() {
-  const [count, setCount] = useState(0)
+  const [items, setItems] = useState<Item[]>([
+    { id: 'item-1', content: 'Task 1' },
+    { id: 'item-2', content: 'Task 2' },
+    { id: 'item-3', content: 'Task 3' },
+    { id: 'item-4', content: 'Task 4' }
+  ])
+
+  const handleDragEnd = (result: DropResult) => {
+    console.log(result)
+  }
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <div className="container">
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="column-1">
+          {(provided) => (
+            <Column
+              {...provided.droppableProps}
+              innerRef={provided.innerRef}
+              title="Backlog"
+            >
+              {items.map((item, index) => (
+                <Draggable key={item.id} draggableId={item.id} index={index}>
+                  {(provided) => (
+                    <TaskCard
+                      innerRef={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      {item.content}
+                    </TaskCard>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </Column>
+          )}
+        </Droppable>
+        <Droppable droppableId="column-2">
+          {(provided) => (
+            <Column
+              {...provided.droppableProps}
+              innerRef={provided.innerRef}
+              title="Backlog"
+            >
+              {provided.placeholder}
+            </Column>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   )
 }
