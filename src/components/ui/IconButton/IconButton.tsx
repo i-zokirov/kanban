@@ -2,7 +2,7 @@ import React from 'react'
 import { IconType } from 'react-icons'
 
 type IconButtonProps = {
-  onClick?: () => void
+  onClick?: React.MouseEventHandler<HTMLButtonElement>
   className?: string
   children: React.ReactNode
   style?: React.CSSProperties

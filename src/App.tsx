@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import { DragDropContext, Draggable, DropResult } from 'react-beautiful-dnd'
 import { Column, Droppable } from './components/kanban'
-import { TaskCard } from './components/ui'
+import { Modal, TaskCard } from './components/ui'
 import { tasks } from './dummydata'
 
 interface Item {
