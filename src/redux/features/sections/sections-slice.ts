@@ -21,7 +21,7 @@ export const sectionsApi = createApi({
     updateSection: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `/sections/${id}`,
-        method: 'PUT',
+        method: 'PATCH',
         body: data
       })
     }),

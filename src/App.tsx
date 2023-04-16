@@ -3,9 +3,11 @@ import './App.css'
 import { DragDropContext, Draggable, DropResult } from 'react-beautiful-dnd'
 import { Column, Droppable } from './components/kanban'
 import { PageLoading, TaskCard, TaskCreateCard } from './components/ui'
-
 import { useGetSectionsQuery } from './redux/features/sections/sections-slice'
-import { useGetTasksQuery } from './redux/features/tasks/tasks-slice'
+import {
+  useGetTasksQuery,
+  useUpdateTaskMutation
+} from './redux/features/tasks/tasks-slice'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
 import {
   addTasksToBoardCollumns,
@@ -16,10 +18,17 @@ import {
 function App() {
   const [openCreateTask, setOpenCreateTask] = useState<null | string>(null)
   const dispatch = useAppDispatch()
-  const handleDragEnd = (result: DropResult) => {
+  const [updateTask, { isLoading: taskUpdateIsLoading }] =
+    useUpdateTaskMutation()
+
+  const handleDragEnd = async (result: DropResult) => {
     if (!result.destination) return
     const { source, destination } = result
     dispatch(moveTaskOnBoard({ source, destination }))
+    await updateTask({
+      id: result.draggableId,
+      section: destination.droppableId
+    })
   }
 
   const { data: sections, isLoading: sectionsLoading } = useGetSectionsQuery('')
