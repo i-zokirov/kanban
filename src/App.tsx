@@ -1,20 +1,25 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import { DragDropContext, Draggable, DropResult } from 'react-beautiful-dnd'
 import { Column, Droppable } from './components/kanban'
-import { Modal, TaskCard } from './components/ui'
+import { TaskCard, TaskCreateCard } from './components/ui'
 import { tasks } from './dummydata'
+import { useGetSectionsQuery } from './redux/features/sections/sections-slice'
+import { useGetTasksQuery } from './redux/features/tasks/tasks-slice'
 
 interface Item {
   id: string
   content: string
 }
 
-const columns = ['Backlog', 'In Progress', 'Done']
 function App() {
+  const [openCreateTask, setOpenCreateTask] = useState<null | string>(null)
   const handleDragEnd = (result: DropResult) => {
     console.log(result)
   }
+
+  const { data: sections, isLoading: sectionsLoading } = useGetSectionsQuery('')
+  const { data: tasks, isLoading: tasksLoading } = useGetTasksQuery('')
 
   return (
     <div className="app p-8">
@@ -40,6 +45,7 @@ function App() {
                   </Draggable>
                 ))}
                 {provided.placeholder}
+                <TaskCreateCard />
               </Column>
             )}
           </Droppable>

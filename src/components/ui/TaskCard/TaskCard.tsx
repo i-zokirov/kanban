@@ -1,12 +1,13 @@
 import React from 'react'
-import Card from '../Card/Card'
+import Card from '../Card'
 import { Task } from '../../../interfaces'
-import Typography from '../Typography/Typography'
-import IconButton from '../IconButton/IconButton'
+import Typography from '../Typography'
+import IconButton from '../IconButton'
 import { RxPencil1 } from 'react-icons/rx'
-import Modal from '../Modal/Modal'
+import Modal from '../Modal'
 import { useAppDispatch } from '../../../redux/hooks'
 import { openModal } from '../../../redux/features/modal/modal-slice'
+
 interface TaskCardProps {
   innerRef: React.Ref<HTMLDivElement>
   task: Task
