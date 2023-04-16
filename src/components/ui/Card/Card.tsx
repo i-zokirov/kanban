@@ -3,12 +3,22 @@ interface CardProps {
   children: React.ReactNode
   className?: string
   style?: React.CSSProperties
+  innerRef?: React.Ref<HTMLDivElement>
+  [x: string]: any
 }
-const Card: React.FC<CardProps> = ({ children, className, style }) => {
+const Card: React.FC<CardProps> = ({
+  children,
+  className,
+  style,
+  innerRef,
+  ...rest
+}) => {
   return (
     <div
-      className={`bg-white rounded-md shadow-sm overflow-hidden p-2 .w-full ${className}`}
+      ref={innerRef}
+      className={`bg-white rounded-md shadow-sm p-2 .w-full ${className}`}
       style={{ ...style }}
+      {...rest}
     >
       {children}
     </div>
