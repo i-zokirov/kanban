@@ -24,15 +24,13 @@ export const tasksApi = createApi({
         url: `/tasks/${id}`,
         method: 'PATCH',
         body: data
-      }),
-      transformResponse: (response: any) => response.data as ITask
+      })
     }),
     deleteTask: builder.mutation({
       query: (id) => ({
         url: `/tasks/${id}`,
         method: 'DELETE'
-      }),
-      transformResponse: (response: any) => response.data as ITask
+      })
     })
   })
 })

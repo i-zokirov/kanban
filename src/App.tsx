@@ -2,7 +2,12 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import { DragDropContext, Draggable, DropResult } from 'react-beautiful-dnd'
 import { Column, Droppable } from './components/kanban'
-import { PageLoading, TaskCard, TaskCreateCard } from './components/ui'
+import {
+  EditTaskModal,
+  PageLoading,
+  TaskCard,
+  TaskCreateCard
+} from './components/ui'
 import { useGetSectionsQuery } from './redux/features/sections/sections-slice'
 import {
   useGetTasksQuery,
@@ -80,6 +85,7 @@ function App() {
           ))}
         </DragDropContext>
       </div>
+      <EditTaskModal />
     </div>
   )
 }
