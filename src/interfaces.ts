@@ -1,6 +1,15 @@
-export interface Task {
-  id: string
+export interface ITask {
+  _id: string
   title: string
-  description: string
-  status: string
+  description?: string
+  section: ISection
+}
+
+export interface ISection {
+  _id: string
+  title: string
+}
+
+export interface IBoardColumn extends ISection {
+  tasks: ITask[]
 }

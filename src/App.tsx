@@ -2,64 +2,73 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import { DragDropContext, Draggable, DropResult } from 'react-beautiful-dnd'
 import { Column, Droppable } from './components/kanban'
-import { TaskCard, TaskCreateCard } from './components/ui'
-import { tasks } from './dummydata'
+import { PageLoading, TaskCard, TaskCreateCard } from './components/ui'
+
 import { useGetSectionsQuery } from './redux/features/sections/sections-slice'
 import { useGetTasksQuery } from './redux/features/tasks/tasks-slice'
-
-interface Item {
-  id: string
-  content: string
-}
+import { useAppDispatch, useAppSelector } from './redux/hooks'
+import {
+  addTasksToBoardCollumns,
+  buildKanbanBoard,
+  moveTaskOnBoard
+} from './redux/features/kanban/kanban-slice'
 
 function App() {
   const [openCreateTask, setOpenCreateTask] = useState<null | string>(null)
+  const dispatch = useAppDispatch()
   const handleDragEnd = (result: DropResult) => {
-    console.log(result)
+    if (!result.destination) return
+    const { source, destination } = result
+    dispatch(moveTaskOnBoard({ source, destination }))
   }
 
   const { data: sections, isLoading: sectionsLoading } = useGetSectionsQuery('')
   const { data: tasks, isLoading: tasksLoading } = useGetTasksQuery('')
+  const { columns } = useAppSelector((state) => state.kanban)
+
+  useEffect(() => {
+    if (sections) dispatch(buildKanbanBoard(sections))
+    if (sections && tasks) dispatch(addTasksToBoardCollumns(tasks))
+  }, [sections, tasks])
+
+  if (sectionsLoading) {
+    return <PageLoading />
+  }
 
   return (
     <div className="app p-8">
-      <div className=" flex items-start">
+      <div className="flex items-start">
         <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId="column-1">
-            {(provided) => (
-              <Column
-                {...provided.droppableProps}
-                innerRef={provided.innerRef}
-                title="Backlog"
-              >
-                {tasks.map((item, index) => (
-                  <Draggable key={item.id} draggableId={item.id} index={index}>
-                    {(provided) => (
-                      <TaskCard
-                        innerRef={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        task={item}
-                      />
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-                <TaskCreateCard />
-              </Column>
-            )}
-          </Droppable>
-          <Droppable droppableId="column-2">
-            {(provided) => (
-              <Column
-                {...provided.droppableProps}
-                innerRef={provided.innerRef}
-                title="Backlog"
-              >
-                {provided.placeholder}
-              </Column>
-            )}
-          </Droppable>
+          {Object.entries(columns).map(([columnId, column], index) => (
+            <Droppable droppableId={columnId} key={columnId}>
+              {(provided) => (
+                <Column
+                  {...provided.droppableProps}
+                  innerRef={provided.innerRef}
+                  title={column.title}
+                >
+                  {column.tasks &&
+                    column.tasks.map((item, index) => (
+                      <Draggable
+                        key={item._id}
+                        draggableId={item._id}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <TaskCard
+                            innerRef={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            task={item}
+                          />
+                        )}
+                      </Draggable>
+                    ))}
+                  {provided.placeholder}
+                </Column>
+              )}
+            </Droppable>
+          ))}
         </DragDropContext>
       </div>
     </div>

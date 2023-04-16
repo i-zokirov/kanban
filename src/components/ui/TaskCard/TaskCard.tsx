@@ -1,6 +1,6 @@
 import React from 'react'
 import Card from '../Card'
-import { Task } from '../../../interfaces'
+import { ITask } from '../../../interfaces'
 import Typography from '../Typography'
 import IconButton from '../IconButton'
 import { RxPencil1 } from 'react-icons/rx'
@@ -10,7 +10,7 @@ import { openModal } from '../../../redux/features/modal/modal-slice'
 
 interface TaskCardProps {
   innerRef: React.Ref<HTMLDivElement>
-  task: Task
+  task: ITask
   [x: string]: any
 }
 
