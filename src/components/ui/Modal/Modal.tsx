@@ -62,7 +62,7 @@ const Modal: React.FC<ModalProps> = ({ onClose, className = '', children }) => {
               role="dialog"
               aria-modal="true"
               aria-labelledby="modal-headline"
-              style={{ minWidth: '280px', minHeight: '250px' }}
+              style={{ minWidth: '460px', minHeight: '420px' }}
             >
               <IconButton
                 onClick={handleClose}
