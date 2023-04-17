@@ -9,16 +9,20 @@ import {
 } from '../../ui'
 import { IconButton } from '../../ui'
 import { RxDotsHorizontal, RxPlus } from 'react-icons/rx'
-import { AiOutlineDelete } from 'react-icons/ai'
+import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai'
 import { HiOutlineArchive } from 'react-icons/hi'
 import './Column.css'
 import { useAddTaskMutation } from '../../../redux/features/tasks/tasks-slice'
 import { useAppDispatch } from '../../../redux/hooks'
 import {
   addTaskToCollumn,
-  removeColumnOnBoard
+  removeColumnOnBoard,
+  updateColumnOnBoard
 } from '../../../redux/features/kanban/kanban-slice'
-import { useDeleteSectionMutation } from '../../../redux/features/sections/sections-slice'
+import {
+  useDeleteSectionMutation,
+  useUpdateSectionMutation
+} from '../../../redux/features/sections/sections-slice'
 
 interface ColumnProps {
   title: string
@@ -35,18 +39,34 @@ const Column: React.FC<ColumnProps> = ({
 }) => {
   const dropableProps = { ...rest }
   const columnId = dropableProps['data-rbd-droppable-id']
-  const [isOpen, setIsOpen] = useState(false)
+  const [openMenu, setOpenMenu] = useState(false)
   const [showCreateTaskCard, setShowCreateTaskCard] = useState<string | null>(
     null
   )
+  const [showSectionTitleInput, setShowSectionTitleInput] = useState(false)
   const [inputValue, setInputValue] = useState('')
+  const [sectionInputValue, setsectionInputValue] = useState(title)
   const [addTask, { data: createdTask }] = useAddTaskMutation()
+  const [updateSection, { data: updatedSection }] = useUpdateSectionMutation()
   const [deleteSection, { data: deletedSection }] = useDeleteSectionMutation()
   const dispatch = useAppDispatch()
+
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setInputValue(e.target.value)
   }
-
+  const handleSectionInputChange: React.ChangeEventHandler<HTMLInputElement> = (
+    e
+  ) => {
+    setsectionInputValue(e.target.value)
+  }
+  const handleSectionInputBlur: React.ChangeEventHandler<HTMLInputElement> = (
+    e
+  ) => {
+    if (sectionInputValue && sectionInputValue !== title) {
+      updateSection({ id: columnId, title: sectionInputValue })
+    }
+    setShowSectionTitleInput(false)
+  }
   const handleInputBlur: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     if (inputValue) {
       handleCreateTask()
@@ -54,7 +74,7 @@ const Column: React.FC<ColumnProps> = ({
     setShowCreateTaskCard(null)
   }
   const handleMenuClick = () => {
-    setIsOpen((prev) => !prev)
+    setOpenMenu((prev) => !prev)
   }
 
   const handleCreateTask = async () => {
@@ -64,11 +84,29 @@ const Column: React.FC<ColumnProps> = ({
     setShowCreateTaskCard(null)
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && inputValue) {
+      handleCreateTask()
+    }
+  }
+  const handleSectionInputKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === 'Enter' && sectionInputValue && sectionInputValue !== title) {
+      updateSection({ id: columnId, title: sectionInputValue })
+      setShowSectionTitleInput(false)
+    }
+  }
+
   const handleDelete = () => {
-    setIsOpen(false)
+    setOpenMenu(false)
     deleteSection(columnId)
   }
 
+  const handleEdit = () => {
+    setShowSectionTitleInput(true)
+    setOpenMenu(false)
+  }
   useEffect(() => {
     if (createdTask) {
       dispatch(addTaskToCollumn(createdTask))
@@ -76,7 +114,11 @@ const Column: React.FC<ColumnProps> = ({
     if (deletedSection) {
       dispatch(removeColumnOnBoard(deletedSection))
     }
-  }, [createdTask, deletedSection])
+    if (updatedSection) {
+      dispatch(updateColumnOnBoard(updatedSection))
+    }
+  }, [createdTask, deletedSection, updatedSection])
+
   return (
     <Card
       className={`mx-2 column ${className}`}
@@ -84,21 +126,41 @@ const Column: React.FC<ColumnProps> = ({
       {...rest}
     >
       <div className="flex items-center justify-between p-3 ">
-        <Typography variant="h5" className="font-normal">
-          {title}
-        </Typography>
+        {showSectionTitleInput ? (
+          <div>
+            <input
+              type="text"
+              placeholder="Start typing"
+              autoFocus={true}
+              value={sectionInputValue}
+              onChange={handleSectionInputChange}
+              onBlur={handleSectionInputBlur}
+              onKeyDown={handleSectionInputKeyDown}
+              className="border-none w-full h-full focus:outline-none p-2 rounded-md bg-gray-300 w-full text-gray-700"
+            />
+          </div>
+        ) : (
+          <Typography variant="h5" className="font-normal">
+            {title}
+          </Typography>
+        )}
+
         <Menu
           anchorElement={
             <IconButton onClick={handleMenuClick}>
               <RxDotsHorizontal />
             </IconButton>
           }
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
+          isOpen={openMenu}
+          setIsOpen={setOpenMenu}
         >
+          <MenuItem onClick={handleEdit}>
+            <AiOutlineEdit style={{ marginRight: '10px' }} /> Edit section
+          </MenuItem>
           <MenuItem onClick={handleDelete}>
             <AiOutlineDelete style={{ marginRight: '10px' }} /> Delete section
           </MenuItem>
+
           <Tooltip position="top" content="Not implemented!">
             <MenuItem>
               <HiOutlineArchive style={{ marginRight: '10px' }} /> Archive this
@@ -114,6 +176,7 @@ const Column: React.FC<ColumnProps> = ({
             value={inputValue}
             onBlur={handleInputBlur}
             onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
           />
         )}
       </div>

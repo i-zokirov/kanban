@@ -7,12 +7,14 @@ interface TaskCreateCardProps {
   value: string
   onChange: React.ChangeEventHandler<HTMLInputElement>
   onBlur: React.ChangeEventHandler<HTMLInputElement>
+  onKeyDown: React.KeyboardEventHandler<HTMLInputElement>
 }
 const TaskCreateCard: React.FC<TaskCreateCardProps> = ({
   style,
   value,
   onChange,
-  onBlur
+  onBlur,
+  onKeyDown
 }) => {
   return (
     <Card className={`min-h-12 task-card-wrapper m-1 ${style}`} style={style}>
@@ -24,6 +26,7 @@ const TaskCreateCard: React.FC<TaskCreateCardProps> = ({
           value={value}
           onChange={onChange}
           onBlur={onBlur}
+          onKeyDown={onKeyDown}
           className="border-none w-full h-full focus:outline-none"
         />
       </div>

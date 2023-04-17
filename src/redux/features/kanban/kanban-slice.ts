@@ -77,6 +77,13 @@ export const kanbanSlice = createSlice({
       const section = action.payload
       delete state.columns[section._id]
     },
+    updateColumnOnBoard: (state, action: PayloadAction<ISection>) => {
+      const section = action.payload
+      state.columns[section._id] = {
+        ...section,
+        tasks: state.columns[section._id].tasks
+      }
+    },
     moveTaskOnBoard: (
       state,
       action: PayloadAction<{
@@ -134,6 +141,7 @@ export const {
   updateTaskInCollumn,
   moveTaskOnBoard,
   removeTaskOnBoard,
-  removeColumnOnBoard
+  removeColumnOnBoard,
+  updateColumnOnBoard
 } = kanbanSlice.actions
 export default kanbanSlice.reducer
