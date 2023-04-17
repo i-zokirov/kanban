@@ -1,11 +1,13 @@
 import { Module, ValidationPipe } from '@nestjs/common'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { APP_PIPE } from '@nestjs/core'
+import { MongooseModule } from '@nestjs/mongoose'
+import { ServeStaticModule } from '@nestjs/serve-static'
+import { join } from 'path'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { TasksModule } from './tasks/tasks.module'
-import { ConfigModule, ConfigService } from '@nestjs/config'
-import { MongooseModule } from '@nestjs/mongoose'
 import { SectionsModule } from './sections/sections.module'
-import { APP_PIPE } from '@nestjs/core'
+import { TasksModule } from './tasks/tasks.module'
 
 @Module({
   imports: [
@@ -17,7 +19,11 @@ import { APP_PIPE } from '@nestjs/core'
       useUnifiedTopology: true
     }),
     TasksModule,
-    SectionsModule
+    SectionsModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'frontend', 'dist'),
+      renderPath: '/app'
+    })
   ],
   controllers: [AppController],
   providers: [
