@@ -1,13 +1,8 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { DragDropContext, Draggable, DropResult } from 'react-beautiful-dnd'
-import { Column, Droppable } from './components/kanban'
-import {
-  EditTaskModal,
-  PageLoading,
-  TaskCard,
-  TaskCreateCard
-} from './components/ui'
+import { Column, ColumnPlaceHolder, Droppable } from './components/kanban'
+import { EditTaskModal, PageLoading, TaskCard } from './components/ui'
 import { useGetSectionsQuery } from './redux/features/sections/sections-slice'
 import {
   useGetTasksQuery,
@@ -50,41 +45,42 @@ function App() {
   }
 
   return (
-    <div className="app p-8">
-      <div className="flex items-start">
-        <DragDropContext onDragEnd={handleDragEnd}>
-          {Object.entries(columns).map(([columnId, column], index) => (
-            <Droppable droppableId={columnId} key={columnId}>
-              {(provided) => (
-                <Column
-                  {...provided.droppableProps}
-                  innerRef={provided.innerRef}
-                  title={column.title}
-                >
-                  {column.tasks &&
-                    column.tasks.map((item, index) => (
-                      <Draggable
-                        key={item._id}
-                        draggableId={item._id}
-                        index={index}
-                      >
-                        {(provided) => (
-                          <TaskCard
-                            innerRef={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            task={item}
-                          />
-                        )}
-                      </Draggable>
-                    ))}
-                  {provided.placeholder}
-                </Column>
-              )}
-            </Droppable>
-          ))}
-        </DragDropContext>
-      </div>
+    <div className="app p-8 flex items-start ">
+      <DragDropContext onDragEnd={handleDragEnd}>
+        {Object.entries(columns).map(([columnId, column], index) => (
+          <Droppable droppableId={columnId} key={columnId}>
+            {(provided) => (
+              <Column
+                {...provided.droppableProps}
+                innerRef={provided.innerRef}
+                title={column.title}
+                className="flex-shrink-0"
+              >
+                {column.tasks &&
+                  column.tasks.map((item, index) => (
+                    <Draggable
+                      key={item._id}
+                      draggableId={item._id}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <TaskCard
+                          innerRef={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          task={item}
+                        />
+                      )}
+                    </Draggable>
+                  ))}
+                {provided.placeholder}
+              </Column>
+            )}
+          </Droppable>
+        ))}
+      </DragDropContext>
+      <ColumnPlaceHolder />
+
       <EditTaskModal />
     </div>
   )

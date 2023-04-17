@@ -1,11 +1,24 @@
 import React, { useEffect, useState } from 'react'
-import { Card, Menu, MenuItem, TaskCreateCard, Typography } from '../../ui'
+import {
+  Card,
+  Menu,
+  MenuItem,
+  TaskCreateCard,
+  Tooltip,
+  Typography
+} from '../../ui'
 import { IconButton } from '../../ui'
 import { RxDotsHorizontal, RxPlus } from 'react-icons/rx'
+import { AiOutlineDelete } from 'react-icons/ai'
+import { HiOutlineArchive } from 'react-icons/hi'
 import './Column.css'
 import { useAddTaskMutation } from '../../../redux/features/tasks/tasks-slice'
 import { useAppDispatch } from '../../../redux/hooks'
-import { addTaskToCollumn } from '../../../redux/features/kanban/kanban-slice'
+import {
+  addTaskToCollumn,
+  removeColumnOnBoard
+} from '../../../redux/features/kanban/kanban-slice'
+import { useDeleteSectionMutation } from '../../../redux/features/sections/sections-slice'
 
 interface ColumnProps {
   title: string
@@ -14,7 +27,12 @@ interface ColumnProps {
   [x: string]: any
 }
 
-const Column: React.FC<ColumnProps> = ({ title, children, ...rest }) => {
+const Column: React.FC<ColumnProps> = ({
+  title,
+  children,
+  className,
+  ...rest
+}) => {
   const dropableProps = { ...rest }
   const columnId = dropableProps['data-rbd-droppable-id']
   const [isOpen, setIsOpen] = useState(false)
@@ -23,6 +41,7 @@ const Column: React.FC<ColumnProps> = ({ title, children, ...rest }) => {
   )
   const [inputValue, setInputValue] = useState('')
   const [addTask, { data: createdTask }] = useAddTaskMutation()
+  const [deleteSection, { data: deletedSection }] = useDeleteSectionMutation()
   const dispatch = useAppDispatch()
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setInputValue(e.target.value)
@@ -32,6 +51,7 @@ const Column: React.FC<ColumnProps> = ({ title, children, ...rest }) => {
     if (inputValue) {
       handleCreateTask()
     }
+    setShowCreateTaskCard(null)
   }
   const handleMenuClick = () => {
     setIsOpen((prev) => !prev)
@@ -44,15 +64,23 @@ const Column: React.FC<ColumnProps> = ({ title, children, ...rest }) => {
     setShowCreateTaskCard(null)
   }
 
+  const handleDelete = () => {
+    setIsOpen(false)
+    deleteSection(columnId)
+  }
+
   useEffect(() => {
     if (createdTask) {
       dispatch(addTaskToCollumn(createdTask))
     }
-  }, [createdTask])
+    if (deletedSection) {
+      dispatch(removeColumnOnBoard(deletedSection))
+    }
+  }, [createdTask, deletedSection])
   return (
     <Card
-      className="min-h-400 max-h-90vh w-96 mx-2 column "
-      style={{ backgroundColor: '#f7f8f9' }}
+      className={`mx-2 column ${className}`}
+      style={{ backgroundColor: '#f7f8f9', width: '300px' }}
       {...rest}
     >
       <div className="flex items-center justify-between p-3 ">
@@ -68,9 +96,15 @@ const Column: React.FC<ColumnProps> = ({ title, children, ...rest }) => {
           isOpen={isOpen}
           setIsOpen={setIsOpen}
         >
-          <MenuItem> Menu item 1</MenuItem>
-          <MenuItem> Menu item 1</MenuItem>
-          <MenuItem> Menu item 1</MenuItem>
+          <MenuItem onClick={handleDelete}>
+            <AiOutlineDelete style={{ marginRight: '10px' }} /> Delete section
+          </MenuItem>
+          <Tooltip position="top" content="Not implemented!">
+            <MenuItem>
+              <HiOutlineArchive style={{ marginRight: '10px' }} /> Archive this
+              list
+            </MenuItem>
+          </Tooltip>
         </Menu>
       </div>
       <div className="scrollable max-h-80 overscroll-y-auto overflow-y-scroll">

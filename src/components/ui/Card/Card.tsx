@@ -16,7 +16,7 @@ const Card: React.FC<CardProps> = ({
   return (
     <div
       ref={innerRef}
-      className={`bg-white rounded-md shadow-sm p-2 .w-full ${className}`}
+      className={`bg-white rounded-md shadow-sm p-2 ${className}`}
       style={{ ...style }}
       {...rest}
     >

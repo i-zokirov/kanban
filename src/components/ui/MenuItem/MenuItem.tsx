@@ -14,7 +14,7 @@ const MenuItem: React.FC<MeuItemProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 w-full text-left ${className}`}
+      className={`block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex items-center ${className}`}
       style={{ ...style }}
     >
       {children}

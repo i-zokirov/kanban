@@ -1,5 +1,5 @@
 .column {
-  min-height: 200px;
+  min-height: 120px;
   background-color: #f7f8f9;
   max-height: 90vh;
   /* overflow-y: scroll; */

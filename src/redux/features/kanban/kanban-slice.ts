@@ -34,7 +34,7 @@ export const kanbanSlice = createSlice({
       Object.entries(state.columns).forEach(([columnId, column]) => {
         const tasks = action.payload
         const columnTasks = tasks.filter(
-          (task) => task.section._id === columnId
+          (task) => task.section && task.section._id === columnId
         )
         columns[columnId] = {
           ...column,
@@ -59,12 +59,23 @@ export const kanbanSlice = createSlice({
         state.columns[task.section._id].tasks[index] = task
       }
     },
+    addColumnToBoard: (state, action: PayloadAction<ISection>) => {
+      const section = action.payload
+      state.columns[section._id] = {
+        ...section,
+        tasks: []
+      }
+    },
     removeTaskOnBoard: (state, action: PayloadAction<ITask>) => {
       const task = action.payload
       const sectionData = state.columns[task.section._id].tasks
       state.columns[task.section._id].tasks = sectionData.filter(
         (el) => el._id !== task._id
       )
+    },
+    removeColumnOnBoard: (state, action: PayloadAction<ISection>) => {
+      const section = action.payload
+      delete state.columns[section._id]
     },
     moveTaskOnBoard: (
       state,
@@ -117,10 +128,12 @@ export const kanbanSlice = createSlice({
 
 export const {
   buildKanbanBoard,
+  addColumnToBoard,
   addTasksToBoardCollumns,
   addTaskToCollumn,
   updateTaskInCollumn,
   moveTaskOnBoard,
-  removeTaskOnBoard
+  removeTaskOnBoard,
+  removeColumnOnBoard
 } = kanbanSlice.actions
 export default kanbanSlice.reducer
