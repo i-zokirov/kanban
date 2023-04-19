@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
-import IconButton from '../IconButton/IconButton'
 import { RxCross2 } from 'react-icons/rx'
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { closeModal } from '../../../redux/features/modal/modal-slice'
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
+import IconButton from '../IconButton/IconButton'
 
 type ModalProps = {
   onClose?: () => void
@@ -62,7 +62,10 @@ const Modal: React.FC<ModalProps> = ({ onClose, className = '', children }) => {
               role="dialog"
               aria-modal="true"
               aria-labelledby="modal-headline"
-              style={{ minWidth: '460px', minHeight: '460px' }}
+              style={{
+                minWidth: '460px',
+                minHeight: '580px'
+              }}
             >
               <IconButton
                 onClick={handleClose}

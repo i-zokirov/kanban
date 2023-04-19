@@ -1,18 +1,20 @@
 import React, { useEffect } from 'react'
 import { AiOutlineDelete } from 'react-icons/ai'
-import Typography from '../Typography'
 import { ITask } from '../../../interfaces'
-import Modal from '../Modal'
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
-import {
-  useDeleteTaskMutation,
-  useUpdateTaskMutation
-} from '../../../redux/features/tasks/tasks-slice'
 import {
   removeTaskOnBoard,
   updateTaskInCollumn
 } from '../../../redux/features/kanban/kanban-slice'
 import { closeModal } from '../../../redux/features/modal/modal-slice'
+import {
+  useDeleteTaskMutation,
+  useUpdateTaskMutation
+} from '../../../redux/features/tasks/tasks-slice'
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
+import Modal from '../Modal'
+import MultipartForm from '../MultipartForm/MultipartForm'
+import Typography from '../Typography'
+import FetchTaskMedia from './FetchTaskMedia'
 
 const TaskCardModal: React.FC = () => {
   const modal = useAppSelector((state) => state.modal)
@@ -51,17 +53,16 @@ const TaskCardModal: React.FC = () => {
       dispatch(closeModal())
     }
   }
-  useEffect(() => {
-    if (updatedTaskData) {
-      dispatch(updateTaskInCollumn(updatedTaskData))
-      setTask(updatedTaskData)
-    }
-  }, [updatedTaskData])
+
   useEffect(() => {
     if (modal.type === 'TaskCardModal') {
       setTask(modal.content as ITask)
     }
-  }, [modal])
+    if (updatedTaskData) {
+      dispatch(updateTaskInCollumn(updatedTaskData))
+      setTask(updatedTaskData)
+    }
+  }, [modal, updatedTaskData])
   useEffect(() => {
     if (task) {
       setTitle(task?.title)
@@ -108,41 +109,13 @@ const TaskCardModal: React.FC = () => {
           onBlur={handleBlur}
         ></textarea>
       </div>
-      <div className="flex items-center justify-center w-full h-30 mt-3">
-        <label
-          htmlFor="dropzone-file"
-          className="flex flex-col items-center justify-center w-full h-30 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-        >
-          <div className="flex flex-col items-center justify-center pt-5 pb-6 ">
-            <svg
-              aria-hidden="true"
-              className="w-10 h-10 mb-3 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-              />
-            </svg>
-            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-              <span className="font-semibold">Click to upload</span> or drag and
-              drop
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              SVG, PNG, JPG or GIF (MAX. 800x400px)
-            </p>
-          </div>
-          <input id="dropzone-file" type="file" className="hidden" />
-        </label>
+      {task && task._id && <FetchTaskMedia taskId={task._id} />}
+      <div className=" w-full h-30 mt-3">
+        <MultipartForm />
       </div>
       <div className="mt-2">
         <button
-          className="flex items-center border border-red-500 text-red-500 rounded px-3 py-2 hover:bg-red-500 hover:text-white focus:outline-none"
+          className="flex items-center border border-red-500 text-red-500 rounded px-3 py-1 hover:bg-red-500 hover:text-white focus:outline-none"
           onClick={handleDelete}
         >
           <AiOutlineDelete />

@@ -13,3 +13,8 @@ export interface ISection {
 export interface IBoardColumn extends ISection {
   tasks: ITask[]
 }
+
+export type Media = {
+  publicUrl: string
+  filename: string
+}
